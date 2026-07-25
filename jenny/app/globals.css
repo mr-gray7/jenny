@@ -1,0 +1,300 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Built Slowly — design tokens
+   Palette logic: a car at night. Cold road, warm dashboard.
+   Everything is dark, nothing is black. Nothing is neon.
+------------------------------------------------------------------ */
+
+@theme {
+  /* Surfaces — the specified black, with near-black steps above it.
+     Neutral rather than blue-shifted, so the beige reads warm. */
+  --color-ink-950: #0b0b0b;
+  --color-ink-900: #101010;
+  --color-ink-850: #141414;
+  --color-ink-800: #191919;
+  --color-ink-700: #212121;
+  --color-ink-600: #2c2c2d;
+  --color-ink-500: #3d3d3f;
+
+  /* Text — white, then soft grey */
+  --color-porcelain: #ffffff;
+  --color-porcelain-dim: #a8a6a2;
+  /* Sits at 5.2:1 on a glass card. Any darker drops under AA at the
+     12-13px sizes the footnotes use. */
+  --color-porcelain-faint: #8b8985;
+
+  /* Warm beige, resolving to a very restrained gold at the top end.
+     "ember" is the historical token name; the values are the PRD's
+     beige-and-gold, kept low-saturation so nothing reads as neon. */
+  --color-ember-100: #f7f0e4;
+  --color-ember-300: #e6d9c3;
+  --color-ember-400: #d3bd93;
+  --color-ember-500: #c9a961;
+  --color-ember-600: #8c7440;
+
+  /* Neutral counterpoint for dashboard state. Deliberately not a
+     colour — the palette has no blue in it. */
+  --color-signal-400: #b9b6b0;
+  --color-signal-600: #55534f;
+
+  --font-display: var(--font-display), ui-serif, Georgia, serif;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Motion — one signature curve, used everywhere */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  /* The moon easter egg. Still dark — the PRD asks for dark mode only —
+     but the whole page warms by a few degrees, like the difference
+     between 2am and an hour before sunrise. */
+  :root[data-mood="dawn"] {
+    --color-ink-950: #100d0a;
+    --color-ink-900: #16120e;
+    --color-ink-850: #1a1611;
+    --color-ink-800: #201a14;
+    --color-ink-700: #2a221a;
+    --color-porcelain-dim: #b5aa9a;
+    --color-ember-400: #dcc49a;
+    --color-ember-500: #d3b071;
+  }
+
+  :root[data-mood="dawn"] body {
+    background-color: var(--color-ink-950);
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-porcelain);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-ember-400) 30%, transparent);
+    color: var(--color-porcelain);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ember-400);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Scrollbar — present, but quiet */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink-950);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-ink-700);
+    border-radius: 99px;
+    border: 3px solid var(--color-ink-950);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ink-600);
+  }
+}
+
+@layer utilities {
+  /* Glass — the restrained kind. Blur + one hairline, no rainbow borders. */
+  .glass {
+    background: linear-gradient(
+      160deg,
+      color-mix(in oklab, var(--color-ink-800) 72%, transparent),
+      color-mix(in oklab, var(--color-ink-900) 82%, transparent)
+    );
+    backdrop-filter: blur(20px) saturate(120%);
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
+    border: 1px solid color-mix(in oklab, var(--color-porcelain) 8%, transparent);
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, var(--color-porcelain) 6%, transparent) inset,
+      0 24px 60px -32px rgb(0 0 0 / 0.9);
+  }
+
+  .glass-hover {
+    transition:
+      border-color 600ms var(--ease-out-expo),
+      transform 600ms var(--ease-out-expo),
+      box-shadow 600ms var(--ease-out-expo);
+  }
+  .glass-hover:hover {
+    border-color: color-mix(in oklab, var(--color-ember-400) 26%, transparent);
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, var(--color-porcelain) 8%, transparent) inset,
+      0 30px 80px -40px color-mix(in oklab, var(--color-ember-600) 40%, black);
+  }
+
+  /* Text that fades at the edges like light falling off */
+  .text-gradient {
+    background: linear-gradient(
+      180deg,
+      var(--color-porcelain) 0%,
+      color-mix(in oklab, var(--color-porcelain) 62%, var(--color-ink-500)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-ember-gradient {
+    background: linear-gradient(
+      100deg,
+      var(--color-ember-300) 0%,
+      var(--color-ember-500) 50%,
+      var(--color-ember-300) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Editorial measure — long-form emotional copy should never run wide */
+  .measure {
+    max-width: 34ch;
+  }
+  .measure-wide {
+    max-width: 52ch;
+  }
+
+  .hairline {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--color-porcelain) 14%, transparent) 20%,
+      color-mix(in oklab, var(--color-porcelain) 14%, transparent) 80%,
+      transparent
+    );
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-porcelain-faint);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Reduced motion. Not an afterthought: the whole piece must still
+   read as a story with every animation switched off.
+------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes sheen {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+/* Floating particles — dust in a projector beam, not snow. */
+@keyframes float-up {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--particle-opacity, 0.5);
+  }
+  90% {
+    opacity: var(--particle-opacity, 0.5);
+  }
+  100% {
+    transform: translate3d(var(--particle-drift, 12px), -110vh, 0);
+    opacity: 0;
+  }
+}
+
+/* The car easter egg. Two headlight smears crossing the viewport. */
+@keyframes drive-by {
+  0% {
+    transform: translate3d(-30vw, 0, 0);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(130vw, 0, 0);
+    opacity: 0;
+  }
+}
+
+/* Scan sweep for chapter 02. */
+@keyframes scan-sweep {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(400%);
+  }
+}
